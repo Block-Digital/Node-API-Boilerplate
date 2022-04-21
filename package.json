@@ -15,7 +15,15 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
+    "module-alias": "^2.2.2",
     "mongoose": "^5.9.9",
     "nodemon": "^2.0.3"
+  },
+  "_moduleAliases": {
+    "@models": "models",
+    "@middleware": "middleware",
+    "@routes": "routes",
+    "@controllers": "controllers",
+    "@validation": "validation.js"
   }
 }

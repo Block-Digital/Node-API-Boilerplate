@@ -4,4 +4,17 @@
 
 Run `NPM Install` to install dependencies.
 
-Add a `.env` file to the project with a URL to a Mongo DB. The URL should be stored in a variable called `DB_CONNECT`.
+## DOTENV
+Add a `.env` file to the project. This file will store sensitive information critical to the running of the application.
+
+The following variables will be required:
+
+`DB_CONNECT` - The URL to your Mongo DB. 
+`TOKEN_SECRET` - A URL string for your Token Secret.
+`TOKEN_SECRET_EXPIRY` - A URL string for your expiry date. E.g "2d".
+`REFRESH_TOKEN_SECRET` - A URL string for your Refresh Token Secret.
+`API_URL` - A URL string from which your API routes will be accessed. E.g. "/api".
+`PROTECTED_API_URL` - A URL string from which your protected API routes will be accessed. E.g. "/api/protected"
+
+## Start
+Running `npm start` will run the server on `localhost:3000`.

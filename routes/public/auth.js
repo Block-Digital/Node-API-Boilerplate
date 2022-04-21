@@ -1,9 +1,9 @@
 const router    = require('express').Router();
-const User      = require('../model/User');
-const Token     = require('../model/Token');
+const User      = require('@models/User');
+const Token     = require('@models/Token');
 const bcrypt    = require('bcryptjs');
 const jwt       = require('jsonwebtoken');
-const { registerValidation, loginValidation } = require('../validation');
+const { registerValidation, loginValidation } = require('@validation');
 
 router.post('/token', async (req, res) =>{
     const refreshToken = req.body.refreshToken;
