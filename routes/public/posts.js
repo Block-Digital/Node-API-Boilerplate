@@ -1,13 +1,8 @@
-const router    = require('express').Router();
+const router        = require('express').Router();
+const verifyRoles   = require('@middleware/verifyRoles');
+const roles         = require('@config/roles');
+const posts         = require("@controllers/posts");
 
-router.get('/', (req, res) => {
-
-    res.json({
-        posts: {
-            title: 'My first Post',
-            description: "Data you should not access without being logged in"
-        }
-    })
-})
+router.get('/', posts.get);
 
 module.exports = router;

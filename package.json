@@ -24,6 +24,7 @@
     "@middleware": "middleware",
     "@routes": "routes",
     "@controllers": "controllers",
+    "@config": "config",
     "@validation": "validation.js"
   }
 }
