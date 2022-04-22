@@ -1,5 +1,9 @@
 # Node API Boilerplate
 
+This boilerplate has been created to allow us to rapidly deploy API software.
+
+A JWT Access and Refresh Token system and User Role Access has been implemented.
+
 ## Installation
 
 Run `NPM Install` to install dependencies.
@@ -18,3 +22,16 @@ The following variables will be required:
 
 ## Start
 Running `npm start` will run the server on `localhost:3000`.
+
+# Routes
+There are two main routes available:
+
+## Public
+These are routes available to anyone via an API request. They do not require an Access Token in order to get, put, delete or edit data at API endpoints.  
+
+If required, it is possible to verify user roles via middleware by adding `verifyRoles()` function before the controller.
+
+## Private
+These are protected routes available to anyone with an Access Token. They require an Access Token in order to get, put, delete or edit data at API endpoints.  
+
+If required, it is possible to verify user roles via middleware by adding `verifyRoles()` function before the controller.
