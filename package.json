@@ -26,5 +26,9 @@
     "@controllers": "controllers",
     "@config": "config",
     "@validation": "validation.js"
+  },
+  "devDependencies": {
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5"
   }
 }

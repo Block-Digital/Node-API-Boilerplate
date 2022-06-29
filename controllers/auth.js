@@ -8,21 +8,27 @@ const { registerValidation, loginValidation } = require('@validation');
 
 module.exports = {
   token: async (req, res) => {
-    const refreshToken = req.body.refreshToken;
-    if( refreshToken == null ) return res.sendStatus(401);
-    
-    const tokenExists = await Token.findOne({refresh_token: refreshToken});
-    if( !tokenExists ) return res.sendStatus(401);
+    const cookies = req.cookies;
+    if( !cookies?.jwt ) return res.status(401).send('no cookies exists');
 
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+    const refreshToken = cookies.jwt;
+    if( refreshToken == null ) return res.status(401).send('no refreshToken exists');
+    
+    const tokenExists = await Token.findOne({ refresh_token: refreshToken });
+    if( !tokenExists ) return res.status(401).send('Can\'t find token');
+
+    const user = await User.findOne({ _id: tokenExists.user_id });
+    if( !user ) return res.status(400).send('Email not found');
+
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
         if( err ) return res.sendStatus(403);
         const accessToken = jwt.sign({
           _id: user._id,
           _info: {
-            roles: Object.values(user.roles)
+            roles: user.roles
           }
         }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_SECRET_EXPIRY});
-        res.json({ token: accessToken });
+        return res.json({ accessToken: accessToken });
     });
   },
   register: async (req, res) => {
@@ -42,15 +48,12 @@ module.exports = {
     const user = new User({
         name: req.body.name,
         email: req.body.email,
-        password: hashedPassword,
-        roles: {
-          "User": 1022
-        }
+        password: hashedPassword
     });
 
     try{
         const savedUser = await user.save();
-        res.send({user: user._id});
+        return res.send({user: user._id});
     }catch(err){
         res.status(400).send(err);
     }
@@ -76,13 +79,18 @@ module.exports = {
         roles: user.roles
       }
     }, process.env.TOKEN_SECRET, {expiresIn: process.env.TOKEN_SECRET_EXPIRY});
-    const refreshToken = jwt.sign({ _id: user._id }, process.env.REFRESH_TOKEN_SECRET);
-
+    
     // Check if user already has refresh token
     const tokenCheck = await Token.findOne({user_id: user._id});
+    
     if( tokenCheck ){
-        return res.header('auth-token', token).send({token: token, refreshToken: tokenCheck.refresh_token});
+
+      res.cookie("jwt", tokenCheck.refresh_token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      return res.json({accessToken: token});
     }
+
+    // Create a new Refresh Token
+    const refreshToken = jwt.sign({ _id: user._id }, process.env.REFRESH_TOKEN_SECRET);
     
     // create a new auth token in database
     const authToken = new Token({
@@ -94,12 +102,40 @@ module.exports = {
     try{
         // Save the token
         const savedToken = await authToken.save();
-        res.header('auth-token', token).send({token: token, refreshToken: refreshToken});
+
+        res.cookie("jwt", savedToken.refresh_token, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        return res.json({ accessToken: token });
+
     }catch(err){
         res.status(400).send(err);
     }
   },
+  logout: async (req, res) => {
+
+    const cookies = req.cookies;
+    if( !cookies?.jwt ) return res.sendStatus(204);
+
+    const refreshToken = cookies.jwt;
+
+    // Check if token exists
+    const tokenExists = await Token.findOne({ refresh_token: refreshToken });
+    tokenExists.remove();
+
+    if( !tokenExists ){
+      //res.clearCookie("jwt", { httpOnly: true }); Serves on HTTPS for production
+      res.clearCookie("jwt");
+      return res.sendStatus(204);
+    }
+
+    res.clearCookie("jwt");
+    return res.sendStatus(204);
+  },
   delete: () => {
 
+  },
+  getAll: (req, res) => {
+    User.find({}).then(function (users) {
+      res.send(users);
+    });
   }
 };

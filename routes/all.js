@@ -10,4 +10,5 @@ module.exports = function(app) {
   // Protected Routes
   app.use(`${process.env.PROTECTED_API_URL}`, require('@middleware/verifyToken'));
   app.use(`${process.env.PROTECTED_API_URL}/posts`, require('./private/posts'));
+  app.use(`${process.env.PROTECTED_API_URL}/user`, require('./private/auth'));
 };

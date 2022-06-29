@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        required: false,
         max: 255
     },
     email: {
@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     },
     roles: {
-        type: Map,
-        of: String
+        type: Array,
+        default: [1022]
     }
 });
 
