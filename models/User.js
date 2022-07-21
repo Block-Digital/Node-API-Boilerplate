@@ -4,7 +4,8 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: false,
-        max: 255
+        max: 255,
+        default: ""
     },
     email: {
         type: String,

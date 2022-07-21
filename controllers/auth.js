@@ -137,5 +137,29 @@ module.exports = {
     User.find({}).then(function (users) {
       res.send(users);
     });
+  },
+  update: async (req, res) => {
+    //You can pass req.body directly or you can separate object
+    const { name, email } = req.body;
+    let options = {};
+
+    if( !req.body ) res.status(400).send('No information provided');
+
+    console.log(req.body);
+
+    console.log(req.body.name);
+    console.log(req.body.email);
+
+    if( req.body.name ) options['name'] = req.body.name;
+    if( req.body.email ) options['email'] = req.body.email;
+
+    const { id } = req.params;
+    const filter = { _id : id }
+
+    const updatedUser = await User.findOneAndUpdate(filter, options, { new: true }).catch(error => {
+      return res.status(500).send(error);
+    });
+
+    return res.send({user: updatedUser});
   }
 };
